@@ -6,6 +6,7 @@ from sklearn.preprocessing import StandardScaler
 import pandas as pd
 import re
 from difflib import get_close_matches, SequenceMatcher
+from typing import Union, List, Dict, Optional, Any
 
 app = Flask(__name__)
 
@@ -336,7 +337,7 @@ for idx, yr in enumerate(df['Year']):
     year_to_indices.setdefault(yr, []).append(idx)
 
 
-def find_similar_players(player_name: str, n: int = 5, filtered_df: pd.DataFrame | None = None):
+def find_similar_players(player_name: str, n: int = 5, filtered_df: Optional[pd.DataFrame] = None):
     """Return top *n* players most similar to *player_name*.
 
     Uses pre-computed unit vectors so similarity calculation is a fast
