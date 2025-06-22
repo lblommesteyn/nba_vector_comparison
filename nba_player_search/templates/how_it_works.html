@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How It Works - NBA Player Analogy Finder</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .feature-icon {
+            width: 4rem;
+            height: 4rem;
+            border-radius: 0.75rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            background-color: #1d428a;
+            color: white;
+            font-size: 2rem;
+        }
+        
+        .feature-card {
+            border: none;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            height: 100%;
+            background: #fff;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .feature-card .card-body {
+            padding: 2rem;
+        }
+        
+        .algorithm-step {
+            position: relative;
+            padding-left: 2.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .step-number {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 2rem;
+            height: 2rem;
+            background-color: #1d428a;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .metrics-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .metrics-table th, 
+        .metrics-table td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .metrics-table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+        
+        .metrics-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .metrics-table tbody tr:hover {
+            background-color: rgba(29, 66, 138, 0.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="text-center mb-5">
+                    <h1 class="display-4 mb-3">🏀 How It Works</h1>
+                    <p class="lead text-muted">Understanding the NBA Player Analogy Finder</p>
+                    <a href="/" class="btn btn-primary mt-3">
+                        <i class="bi bi-arrow-left me-2"></i>Back to Analogy Finder
+                    </a>
+                </div>
+                
+                <div class="card shadow-sm border-0 mb-5">
+                    <div class="card-body p-4">
+                        <h2 class="h4 mb-4">The Science Behind Player Comparisons</h2>
+                        <p class="lead">
+                            Our NBA Player Analogy Finder uses advanced statistical analysis and machine learning 
+                            to find players who share similar playing styles across different positions and eras.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="row g-4 mb-5">
+                    <div class="col-md-4">
+                        <div class="feature-card card h-100">
+                            <div class="card-body text-center">
+                                <div class="feature-icon mb-3">
+                                    <i class="bi bi-database"></i>
+                                </div>
+                                <h3>Data Collection</h3>
+                                <p class="text-muted">
+                                    We analyze over 8,800 player-seasons with 50+ statistical metrics, 
+                                    including advanced analytics like PER, BPM, and VORP.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="feature-card card h-100">
+                            <div class="card-body text-center">
+                                <div class="feature-icon mb-3">
+                                    <i class="bi bi-graph-up"></i>
+                                </div>
+                                <h3>Statistical Analysis</h3>
+                                <p class="text-muted">
+                                    Our algorithm normalizes and weights statistics to account for different 
+                                    eras, playing styles, and team contexts.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="feature-card card h-100">
+                            <div class="card-body text-center">
+                                <div class="feature-icon mb-3">
+                                    <i class="bi bi-lightbulb"></i>
+                                </div>
+                                <h3>Intuitive Results</h3>
+                                <p class="text-muted">
+                                    Get clear, explainable results that show not just who is similar, 
+                                    but why they're similar.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card shadow-sm border-0 mb-5">
+                    <div class="card-body p-4">
+                        <h2 class="h4 mb-4">The Algorithm</h2>
+                        <p>
+                            Our algorithm uses a multi-dimensional approach to find the most accurate player analogies:
+                        </p>
+                        
+                        <div class="algorithm-step">
+                            <div class="step-number">1</div>
+                            <h4 class="h5">Vector Space Modeling</h4>
+                            <p class="mb-0">
+                                Each player is represented as a vector in a high-dimensional space based on their 
+                                statistical profile, allowing us to calculate similarities between players.
+                            </p>
+                        </div>
+                        
+                        <div class="algorithm-step">
+                            <div class="step-number">2</div>
+                            <h4 class="h5">Similarity Scoring</h4>
+                            <p class="mb-0">
+                                We calculate multiple similarity scores to capture different aspects of player comparison:
+                            </p>
+                            
+                            <div class="mt-3">
+                                <table class="metrics-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Score Type</th>
+                                            <th>Weight</th>
+                                            <th>Description</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Style Transfer</td>
+                                            <td>30%</td>
+                                            <td>Projects Player A's style onto Player B's context</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Archetype</td>
+                                            <td>25%</td>
+                                            <td>Similarity to Player A's playing style</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Physical</td>
+                                            <td>20%</td>
+                                            <td>Height, weight, and position matching</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Position</td>
+                                            <td>15%</td>
+                                            <td>Role and position compatibility</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Context</td>
+                                            <td>10%</td>
+                                            <td>Similarity to Player B's context</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <div class="algorithm-step">
+                            <div class="step-number">3</div>
+                            <h4 class="h5">Result Ranking</h4>
+                            <p class="mb-0">
+                                Players are ranked based on a weighted combination of these scores, with the top matches 
+                                displayed in order of similarity. Hover over any score to see the detailed breakdown.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card shadow-sm border-0">
+                    <div class="card-body p-4">
+                        <h2 class="h4 mb-4">Understanding the Results</h2>
+                        
+                        <div class="row align-items-center mb-4">
+                            <div class="col-md-5">
+                                <img src="https://via.placeholder.com/600x400?text=Score+Breakdown" alt="Score Breakdown" class="img-fluid rounded">
+                            </div>
+                            <div class="col-md-7">
+                                <h5 class="mt-3 mt-md-0">Score Breakdown</h5>
+                                <p>
+                                    Each result includes a match score from 0-100%. Hover over the score to see a detailed 
+                                    breakdown of how it was calculated, including the contribution of each component.
+                                </p>
+                                <ul>
+                                    <li><strong>Style Transfer:</strong> How well the player embodies Player A's style in Player B's context</li>
+                                    <li><strong>Archetype:</strong> Similarity to Player A's playing style</li>
+                                    <li><strong>Physical:</strong> Physical attributes and position compatibility</li>
+                                    <li><strong>Position:</strong> Role and position matching</li>
+                                    <li><strong>Context:</strong> Similarity to Player B's context</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="row align-items-center">
+                            <div class="col-md-7 order-md-2">
+                                <h5 class="mt-3 mt-md-0">Position and Physical Info</h5>
+                                <p>
+                                    Each result includes the player's primary position and physical attributes 
+                                    to help you understand how they compare to the players in your query.
+                                </p>
+                                <p class="mb-0">
+                                    The position badge color indicates the player's primary position group:
+                                </p>
+                                <ul class="mb-0">
+                                    <li><span class="badge bg-primary">PG/SG</span> Guards</li>
+                                    <li><span class="badge bg-success">SF/PF</span> Forwards</li>
+                                    <li><span class="badge bg-danger">C</span> Centers</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-5 order-md-1">
+                                <img src="https://via.placeholder.com/600x400?text=Player+Card" alt="Player Card" class="img-fluid rounded">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-5">
+                    <a href="/" class="btn btn-primary btn-lg">
+                        <i class="bi bi-lightning-charge me-2"></i>Try It Now
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

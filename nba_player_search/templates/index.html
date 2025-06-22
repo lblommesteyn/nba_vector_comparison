@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NBA Player Analogy Finder</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="text-center mb-5">
+                    <h1 class="display-4 mb-3">🏀 NBA Player Analogy Finder</h1>
+                    <p class="lead text-muted">Discover player relationships using advanced vector analysis</p>
+                    <div class="badge bg-primary p-2 mb-2">30-Year NBA Dataset: {{ stats.year_range }}</div>
+                    <div class="d-flex justify-content-center gap-3 small text-muted">
+                        <div><i class="bi bi-people"></i> {{ stats.unique_players }} unique players</div>
+                        <div><i class="bi bi-calendar3"></i> {{ stats.total_players }} player-seasons</div>
+                        <div><i class="bi bi-graph-up"></i> {{ stats.features }} features</div>
+                    </div>
+                </div>
+                
+                <!-- Navigation -->
+                <div class="text-center mb-4">
+                    <a href="/how-it-works" class="btn btn-outline-primary">
+                        <i class="bi bi-question-circle me-2"></i>How It Works
+                    </a>
+                </div>
+                
+                <!-- Explanation Card -->
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="bi bi-lightbulb me-2"></i>How It Works</h5>
+                        <p class="card-text mb-2">
+                            This tool uses comprehensive NBA statistics including advanced metrics (PER, BPM, VORP, TS%)  
+                            to find players with similar playing styles across 30 years of NBA history (1995-2023) (I love you basketball reference). When you compare two players, we find players who:
+                        </p>
+                        <ul class="mb-2">
+                            <li>Have similar statistical profiles to Player A across 38+ metrics</li>
+                            <li>Relate to Player B's style in a similar way that Player A relates to Player B</li>
+                            <li>Match both basic stats (points, rebounds, assists) and advanced efficiency metrics</li>
+                        </ul>
+                        <p class="card-text mb-0 text-muted">
+                            <small><i class="bi bi-lightbulb me-1"></i>Enhanced with advanced stats like PER, True Shooting %, Box Plus/Minus, and Win Shares for better player comparisons.</small>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Main Analogy Tool -->
+                <div class="card shadow border-0">
+                    <div class="card-body p-4">
+                        <div class="text-center mb-4">
+                            <h2 class="mb-3"><i class="bi bi-magic me-2"></i>Player Analogy Search</h2>
+                        </div>
+                        
+                        <!-- Direction Toggle -->
+                        <div class="row mb-4">
+                            <div class="col-12 text-center">
+                                <div class="btn-group" role="group" aria-label="Analogy direction">
+                                    <input type="radio" class="btn-check" name="analogyDirection" id="directionAB" value="a-b" checked>
+                                    <label class="btn btn-outline-primary" for="directionAB">Who is the <span id="labelA">A</span> of <span id="labelB">B</span>?</label>
+                                    
+                                    <input type="radio" class="btn-check" name="analogyDirection" id="directionBA" value="b-a">
+                                    <label class="btn btn-outline-primary" for="directionBA">Who is the <span id="labelB2">B</span> of <span id="labelA2">A</span>?</label>
+                                </div>
+                                <div class="form-text mt-2">Toggle to change the analogy direction</div>
+                            </div>
+                        </div>
+
+                        <!-- Player Selection -->
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-6">
+                                <div class="card border-success">
+                                    <div class="card-header bg-success text-white">
+                                        <h6 class="mb-0"><i class="bi bi-person-fill me-2"></i>Player A (Reference Style)</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="mb-3">
+                                            <label for="pA" class="form-label fw-bold">Player Name</label>
+                                            <select class="form-select player-select" id="pA" style="width:100%">
+                                                <option></option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-0">
+                                            <label for="yearA" class="form-label fw-bold">Season</label>
+                                            <select class="form-select" id="yearA">
+                                                <option value="">All Seasons</option>
+                                                {% for year in years %}
+                                                    <option value="{{ year }}">{{ year }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="card border-danger">
+                                    <div class="card-header bg-danger text-white">
+                                        <h6 class="mb-0"><i class="bi bi-person-fill me-2"></i>Player B (Target Style)</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="mb-3">
+                                            <label for="pB" class="form-label fw-bold">Player Name</label>
+                                            <select class="form-select player-select" id="pB" style="width:100%">
+                                                <option></option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-0">
+                                            <label for="yearB" class="form-label fw-bold">Season</label>
+                                            <select class="form-select" id="yearB">
+                                                <option value="">All Seasons</option>
+                                                {% for year in years %}
+                                                    <option value="{{ year }}">{{ year }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Era Filters -->
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label for="decadeFilter" class="form-label fw-bold"><i class="bi bi-calendar3 me-2"></i>Filter by Decade</label>
+                                <select class="form-select" id="decadeFilter">
+                                    <option value="">All Decades</option>
+                                    {% for decade in decades %}
+                                        <option value="{{ decade }}">{{ decade }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold"><i class="bi bi-calendar-range me-2"></i>Custom Year Range</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="minYear" placeholder="Min Year (e.g. 1995)">
+                                    <span class="input-group-text">to</span>
+                                    <input type="number" class="form-control" id="maxYear" placeholder="Max Year (e.g. 2023)">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Search Options -->
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-4">
+                                <label for="analogyTop" class="form-label fw-bold"><i class="bi bi-list-ol me-2"></i>Number of Results</label>
+                                <select class="form-select" id="analogyTop">
+                                    <option value="3">3 Results</option>
+                                    <option value="5" selected>5 Results</option>
+                                    <option value="8">8 Results</option>
+                                    <option value="10">10 Results</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold"><i class="bi bi-funnel me-2"></i>Filter Options</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="excludeInputPlayers" checked>
+                                    <label class="form-check-label" for="excludeInputPlayers">
+                                        Exclude input players from results
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="excludeSameTeam">
+                                    <label class="form-check-label" for="excludeSameTeam">
+                                        Exclude same team players
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="eraAdjust" checked>
+                                    <label class="form-check-label" for="eraAdjust">
+                                        Adjust for era differences
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-4 d-flex align-items-end">
+                                <button id="runAnalogy" class="btn btn-primary btn-lg w-100 py-3 fw-bold">
+                                    <i class="bi bi-search me-2"></i><span id="searchButtonText">Find Analogy</span>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Spacer -->
+                        <div class="row mb-4"></div>
+                    </div>
+                </div>
+
+                <!-- Loading Spinner -->
+                <div class="loading-spinner d-none text-center my-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2 text-muted">Analyzing player vectors...</p>
+                </div>
+
+                <!-- Error Messages -->
+                <div class="error-message"></div>
+
+                <!-- Results -->
+                <div id="analogyResults" class="mt-4"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- jQuery (required for Select2 and Bootstrap) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom Scripts -->
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    
+    <script>
+        $(document).ready(function() {
+            // Initialize player selection dropdowns
+            // (Example button code removed)
+            
+            // Add the new decade and era filtering to the analogy search
+            // Define the showError function
+            window.showError = function(message) {
+                $('.error-message').html(`<div class="alert alert-danger mt-3">${message}</div>`);
+                $('.loading-spinner').addClass('d-none');
+            };
+            
+            const originalRunAnalogy = window.runAnalogy;
+            
+            // Override the runAnalogy function to include the new filters
+            window.runAnalogy = function() {
+                // Use the correct player select IDs (pA and pB instead of playerA and playerB)
+                const playerA = $('#pA').val();
+                const playerB = $('#pB').val();
+                const yearA = $('#yearA').val();
+                const yearB = $('#yearB').val();
+                const top = $('#analogyTop').val();
+                const direction = $('input[name="analogyDirection"]:checked').val();
+                const excludeInputPlayers = $('#excludeInputPlayers').is(':checked');
+                const excludeSameTeam = $('#excludeSameTeam').is(':checked');
+                
+                // New filters
+                const decade = $('#decadeFilter').val();
+                const minYear = $('#minYear').val();
+                const maxYear = $('#maxYear').val();
+                const eraAdjust = $('#eraAdjust').is(':checked');
+                
+                if (!playerA || !playerB) {
+                    showError('Please select both players');
+                    return;
+                }
+                
+                // Show loading spinner
+                $('.loading-spinner').removeClass('d-none');
+                $('#analogyResults').empty();
+                $('.error-message').empty();
+                
+                // Update search button text
+                const directionText = direction === 'a-b' ? 
+                    `Who is the ${playerA.split(' (')[0]} of ${playerB.split(' (')[0]}?` : 
+                    `Who is the ${playerB.split(' (')[0]} of ${playerA.split(' (')[0]}?`;
+                $('#searchButtonText').text('Searching...');
+                
+                // Build the API URL with all parameters
+                let apiUrl = `/analogy?a=${encodeURIComponent(playerA)}&b=${encodeURIComponent(playerB)}`;
+                apiUrl += `&direction=${direction}&top=${top}`;
+                apiUrl += `&exclude_input_players=${excludeInputPlayers}&exclude_same_team=${excludeSameTeam}`;
+                
+                // Add new filters to the API URL
+                if (decade) apiUrl += `&decade=${encodeURIComponent(decade)}`;
+                if (minYear) apiUrl += `&min_year=${encodeURIComponent(minYear)}`;
+                if (maxYear) apiUrl += `&max_year=${encodeURIComponent(maxYear)}`;
+                apiUrl += `&era_adjust=${eraAdjust}`;
+                
+                if (yearA) apiUrl += `&year_a=${encodeURIComponent(yearA)}`;
+                if (yearB) apiUrl += `&year_b=${encodeURIComponent(yearB)}`;
+                
+                // Make the API request
+                fetch(apiUrl)
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(err => { throw err; });
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        displayResults(data);
+                        $('#searchButtonText').text('Find Analogy');
+                    })
+                    .catch(error => {
+                        showError(error.error || 'An error occurred');
+                        $('#searchButtonText').text('Find Analogy');
+                    })
+                    .finally(() => {
+                        $('.loading-spinner').addClass('d-none');
+                    });
+            };
+            
+            // Define the displayResults function
+            window.displayResults = function(data) {
+                const resultsDiv = $('#analogyResults');
+                resultsDiv.empty().show();
+                
+                // Create the results card
+                const card = $('<div class="card shadow-sm border-0 mb-4"></div>');
+                const cardBody = $('<div class="card-body"></div>');
+                
+                // Add the query description
+                const queryDescription = $(`<h4 class="mb-4 text-center">Players most similar to <span class="text-primary">${data.a}</span> in the context of <span class="text-danger">${data.b}</span></h4>`);
+                cardBody.append(queryDescription);
+                
+                // Era context display removed as requested
+                
+                // Create the results table
+                const table = $('<table class="table table-hover"></table>');
+                const tableHead = $('<thead><tr><th>#</th><th>Player</th><th>Season</th><th>Score</th><th>Details</th></tr></thead>');
+                const tableBody = $('<tbody></tbody>');
+                
+                // Add each result to the table
+                if (data.results && data.results.length > 0) {
+                    console.log('Results found:', data.results.length);
+                    console.log('First result:', data.results[0]);
+                    
+                    data.results.forEach((result, index) => {
+                        // Debug log each result
+                        console.log(`Processing result ${index}:`, result);
+                        
+                        if (!result) {
+                            console.error('Invalid result item (null or undefined)');
+                            return; // Skip invalid results
+                        }
+                        
+                        const row = $('<tr></tr>');
+                        
+                        // Rank
+                        row.append(`<td>${index + 1}</td>`);
+                        
+                        // Player name - handle different data formats
+                        let playerName = '';
+                        if (result.name) {
+                            playerName = result.name.split('(')[0].trim();
+                        } else if (result.player) {
+                            if (typeof result.player === 'string') {
+                                playerName = result.player.split('(')[0].trim();
+                            } else if (result.player.name) {
+                                playerName = result.player.name;
+                            }
+                        }
+                        row.append(`<td>${playerName}</td>`);
+                        
+                        // Season - handle different data formats
+                        let playerYear = '';
+                        if (result.season) {
+                            playerYear = result.season;
+                        } else if (result.year) {
+                            playerYear = result.year;
+                        } else if (result.player && result.player.year) {
+                            playerYear = result.player.year;
+                        }
+                        row.append(`<td>${playerYear}</td>`);
+                        
+                        // Score with progress bar
+                        const scoreCell = $('<td></td>');
+                        // Handle both 'similarity' and 'score' fields
+                        let scoreValue = 0;
+                        if (result.similarity !== undefined) {
+                            scoreValue = result.similarity;
+                        } else if (result.score !== undefined) {
+                            scoreValue = result.score;
+                        }
+                        const similarity = (scoreValue * 100).toFixed(1);
+                        const scoreBar = $(`<div class="progress" style="height: 5px;"><div class="progress-bar bg-success" role="progressbar" style="width: ${similarity}%" aria-valuenow="${similarity}" aria-valuemin="0" aria-valuemax="100"></div></div>`);
+                        scoreCell.append(`<span class="small">${similarity}%</span>`);
+                        scoreCell.append(scoreBar);
+                        row.append(scoreCell);
+                        
+                        // Position cell removed as requested
+                        
+                        // Component scores
+                        const detailsCell = $('<td></td>');
+                        const detailsButton = $('<button class="btn btn-sm btn-outline-secondary">Details</button>');
+                        
+                        // Create the details popover content
+                        let popoverContent = '<div class="p-2"><h6>Component Scores</h6><ul class="list-unstyled mb-0">';
+                        const componentScores = result.component_scores || result.scores || {};
+                        if (componentScores && Object.keys(componentScores).length > 0) {
+                            for (const [component, scoreData] of Object.entries(componentScores)) {
+                                const formattedComponent = component.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+                                
+                                // Handle both simple scores and complex score objects
+                                let scoreValue;
+                                if (typeof scoreData === 'number') {
+                                    scoreValue = scoreData;
+                                } else if (typeof scoreData === 'object' && scoreData !== null) {
+                                    // Use weighted score if available, otherwise raw score
+                                    scoreValue = scoreData.weighted || scoreData.raw || 0;
+                                } else {
+                                    scoreValue = 0;
+                                }
+                                
+                                const scorePercent = (scoreValue * 100).toFixed(1);
+                                popoverContent += `<li><div class="d-flex justify-content-between"><span>${formattedComponent}:</span> <span class="ms-2">${scorePercent}%</span></div></li>`;
+                            }
+                        } else {
+                            popoverContent += '<li>No detailed scores available</li>';
+                        }
+                        
+                        popoverContent += '</ul></div>';
+                        
+                        // Initialize the popover
+                        detailsButton.attr('data-bs-toggle', 'popover');
+                        detailsButton.attr('data-bs-placement', 'left');
+                        detailsButton.attr('data-bs-html', 'true');
+                        detailsButton.attr('data-bs-content', popoverContent);
+                        detailsButton.attr('title', 'Similarity Breakdown');
+                        
+                        detailsCell.append(detailsButton);
+                        row.append(detailsCell);
+                        
+                        tableBody.append(row);
+                    });
+                } else {
+                    // No results
+                    const noResultsRow = $('<tr><td colspan="6" class="text-center py-4">No matching players found. Try adjusting your filters.</td></tr>');
+                    tableBody.append(noResultsRow);
+                }
+                
+                table.append(tableHead);
+                table.append(tableBody);
+                cardBody.append(table);
+                
+                // Add filters used
+                const filtersUsed = $('<div class="mt-3 small text-muted"></div>');
+                filtersUsed.append('<strong>Filters used:</strong> ');
+                
+                const filterTexts = [];
+                if (data.filters) {
+                    if (data.filters.exclude_input_players) filterTexts.push('Excluded input players');
+                    if (data.filters.exclude_same_team) filterTexts.push('Excluded same team');
+                    if (data.filters.decade) filterTexts.push(`Decade: ${data.filters.decade}`);
+                    if (data.filters.min_year) filterTexts.push(`Min year: ${data.filters.min_year}`);
+                    if (data.filters.max_year) filterTexts.push(`Max year: ${data.filters.max_year}`);
+                    if (data.filters.era_adjust) filterTexts.push('Era adjusted');
+                }
+                
+                filtersUsed.append(filterTexts.length > 0 ? filterTexts.join(' | ') : 'Default');
+                cardBody.append(filtersUsed);
+                
+                card.append(cardBody);
+                resultsDiv.append(card);
+                
+                // Initialize popovers
+                var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+                var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+                    return new bootstrap.Popover(popoverTriggerEl);
+                });
+            };
+            
+            // Replace the click handler
+            $('#runAnalogy').off('click').on('click', window.runAnalogy);
+        });
+    </script>
+</body>
+</html>
